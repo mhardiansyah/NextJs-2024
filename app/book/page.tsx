@@ -5,16 +5,78 @@ import useBookModule from "./lib";
 import useDislosure from "@/Hook/useDislosure";
 import { Drawer } from "@/components/Drawer";
 import Filter from "./module/filter";
+import Button from "@/components/Button";
+import { Pagination } from "@/components/Pagination";
+import { useRouter } from 'next/navigation';
+import Swal from "sweetalert2";
+import { useState } from "react";
 
 const Book = () => {
-  const { useBookList } = useBookModule();
+  const router = useRouter();
+  const { useBookList, useDeleteBook, useDeleteMultiBook } = useBookModule();
+  const mutate = useDeleteBook();
+  const mutateMulti = useDeleteMultiBook();
+
 
  
 
-  const { data, isFetching, isLoading, params, setParams, handleClear, handleFilter } = useBookList();
+  const { data, isFetching, isLoading, params, setParams, handleClear, handleFilter, handlePage, handlePageSize } = useBookList();
   const { isOpen, onOpen, onClose } = useDislosure();
+  const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
 
   console.log("data buku", data);
+
+  const handleDelete = (id: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        mutate.mutate(id,)
+        // Swal.fire({
+  
+        // });
+      }
+    });
+  };
+  const handleDeleteMulti = () => {
+    if (selectedBooks.length === 0){
+      Swal.fire({
+        title: "Anda belum memilih buku!",
+        text: "Silahkan pilih buku yang ingin dihapus!",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
+      return;
+    }
+    Swal.fire({
+      title: "Yakin ingin menghapus buku yang dipilih?",
+      text: "Data ini tidak dapat dikembalikan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, hapus!",
+      
+    }).then((result) => {
+      if (result.isConfirmed) {
+        mutateMulti.mutate(selectedBooks);
+        setSelectedBooks([]); 
+      }
+    });
+
+    
+    
+  };
+  const selectedBook = (id: number) => {
+    setSelectedBooks((prev) =>
+    prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id])
+  }
   return (
     <>
       <Drawer
@@ -26,6 +88,20 @@ const Book = () => {
       >
         <Filter params={params} setParams={setParams} />
       </Drawer>
+
+      <section>
+        <Button width="sm"
+            onClick={onOpen}
+            colorSchema="blue"
+            title="Filter" />
+
+
+<Button onClick={()=> {
+            router.push('/book/tambah')
+          }} width="sm" colorSchema="green" title="tambah" />
+<Button onClick={handleDeleteMulti} width="sm" colorSchema="red" title="hapus banyak" />
+
+      </section>
       <section className="container px-4 mx-auto">
         <Table>
           <Thead>
@@ -73,13 +149,21 @@ const Book = () => {
               <Th scope="col">
                 <span className="sr-only">Actions</span>
               </Th>
+              <th>Aksi</th>
             </Tr>
           </Thead>
           <Tbody>
             {data?.data?.map((item, index) => (
-              <Tr key={item.id || index}>
+              <><Tr key={item.id || index}>
                 <Td>
-                  <span>ok</span>
+                  <span>
+                    <input
+                      checked={selectedBooks.includes(item.id)}
+                      onChange={() => selectedBook(item.id)}
+                      type="checkbox"
+                      className="text-blue-500 border-gray-300 rounded-full rounded dark:bg-gray-900 dark:ring-offset-gray-900 dark:border-gray-700"
+                    />
+                  </span>
                 </Td>
                 <Td>
                   <span>{item.author || "="}</span>
@@ -96,10 +180,37 @@ const Book = () => {
                 <Td>
                   <span>{item.updated_at || "="}</span>
                 </Td>
+                <Td>
+                  <Button
+                    width="sm"
+                    onClick={() => router.push(`/book/${item.id}/update`)}
+                    colorSchema="blue"
+                    title="Edit" />
+                  <Button
+                    width="sm"
+                    onClick={
+                     ()=> {
+                      handleDelete(item.id)
+                     }
+                    }
+                    colorSchema="red"
+                    title="Delete" />
+                </Td>
               </Tr>
+              </>
             ))}
           </Tbody>
         </Table>
+
+
+
+        <Pagination
+            page={params.page}
+            pageSize={params.pageSize}
+            handlePageSize={handlePageSize}
+            handlePage={handlePage}
+            pagination={data?.pagination}
+          />
       </section>
     </>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-const */
 import React, { ChangeEvent } from "react";
@@ -18,7 +19,7 @@ interface PaginationProps {
         total: number;
         total_page: number;
       }
-    | undefined;
+    | any;
 }
  
 export const Pagination: React.FC<PaginationProps> = ({

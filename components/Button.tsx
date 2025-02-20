@@ -47,6 +47,7 @@ const Button: React.FC<
         "w-full": width === "full",
         "h-8": width === "sm",
         "h-12": width === "md",
+        
       })}
     >
       {!isLoading ? (

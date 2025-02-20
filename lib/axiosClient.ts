@@ -13,5 +13,11 @@ export interface BaseResponsePagination {
     limit: number;
     pageSize: number;
     total: number;
+    total_page: number;
   };
+}
+
+export interface BaseResponseSuccess{
+  status: string;
+  message: string;
 }

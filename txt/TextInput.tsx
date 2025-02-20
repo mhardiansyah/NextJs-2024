@@ -18,8 +18,9 @@ function InputText({
       <input
         {...props}
         className={clsx(`w-full h-8 border rounded px-2`, {
-          "border-red-500 border-2": isError,
-          "border-gray-700 text-black": !isError,
+          "border-red-500 border-2 text-black": isError,
+          "border-black text-black": !isError,
+          "text-red-600": messageError
         })}
         {...props}
       />
