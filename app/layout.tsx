@@ -6,6 +6,7 @@ import AppTheme from "@/components/AppTheme";
 import { AppProvider } from "./context/AppContext";
 import ReactQuery from "@/components/ReactQuery";
 import { Session } from "next-auth";
+import NextAuthProvider from "@/components/NextAuthProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,9 +38,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} h-screen w-screen antialiased`}
       >
         <ReactQuery>
+          {""}
+          <NextAuthProvider session={session}>
           <AppProvider>
             <AppTheme title="Belajar ku">{children}</AppTheme>
           </AppProvider>
+          </NextAuthProvider>
         </ReactQuery>
       </body>
     </html>

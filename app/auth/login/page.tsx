@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
  
 import { useFormik, Form, FormikProvider, getIn } from "formik";
@@ -9,6 +10,8 @@ import Button from "@/components/Button";
 import useAuthModule from "../lib";
 import Link from "next/link";
 import InputText from "@/txt/TextInput";
+import { useSession } from "next-auth/react";
+import { Session } from 'next-auth';
  
 export const registerSchema = yup.object().shape({
   email: yup
@@ -27,6 +30,10 @@ export const registerSchema = yup.object().shape({
  
 const Login = () => {
     const { useLogin } = useAuthModule();
+    const {data: session, status} = useSession();
+    console.log("Session", session);
+    console.log("status", status);
+    
   const { mutate, isPending: isLoading } = useLogin();
   const formik = useFormik<LoginPayload>({
     initialValues: registerSchema.getDefault(),

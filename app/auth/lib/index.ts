@@ -3,10 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { axiosClient } from "@/lib/axiosClient";
-// import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LoginPayload, LoginResponse, RegisterPayload, RegisterResponse } from "../interface";
 import Swal from "sweetalert2";
+import { Sign } from "crypto";
  
 const useAuthModule = () => {
   const router = useRouter();
@@ -58,7 +59,17 @@ const useAuthModule = () => {
             text: response.message,
             icon: "success",
           });
-          router.push("/admin");
+          console.log("response", response);
+          await signIn("credentials", {
+            id: response.data.id,
+            name: response.data.nama,
+            email: response.data.email,
+            accessToken: response.data.access_token,
+            refreshToken: response.data.refresh_token,
+            role: "admin",
+            redirect: false,
+          });
+          // router.push("/admin");
         },
         onError: (error:any) => {
           console.log("error:", error.message);
